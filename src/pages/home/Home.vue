@@ -1,10 +1,15 @@
 <script setup lang="ts">
+  import request from "@/api/request.ts";
 
+  const hanldeTest = async () => {
+    const data = await request.get("test")
+    console.log(data)
+  }
 </script>
 
 <template>
   <div>
-    Home
+    <button @click="hanldeTest">测试</button>
   </div>
 </template>
 
