@@ -1,13 +1,8 @@
-export default {
-  fetch(request, env, ctx) {
-    console.log(request, env, ctx)
-    const url = new URL(request.url);
-    if(url.pathname.startsWith('/api')) {
-      return Response.json({
-        name: "Cloudflare",
-      });
-    }
+import { Hono } from "hono";
+import noteRoute from "./routes/noteRoute";
 
-    return new Response('Hello World!');
-  },
-} satisfies ExportedHandler<Env>;
+const app = new Hono<{ Bindings: Env }>();
+
+app.route('/api/notes', noteRoute);
+
+export default app;

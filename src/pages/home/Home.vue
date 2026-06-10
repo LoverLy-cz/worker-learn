@@ -1,15 +1,18 @@
 <script setup lang="ts">
   import request from "@/api/request.ts";
 
-  const hanldeTest = async () => {
-    const data = await request.get("test")
-    console.log(data)
+  const hanldeTest1 = async () => {
+    const result = await request.post("/notes", {
+      title: "测试1",
+      content: "测试1内容",
+    })
+    console.log(result)
   }
 </script>
 
 <template>
   <div>
-    <button @click="hanldeTest">测试</button>
+    <button @click="hanldeTest1">测试1</button>
   </div>
 </template>
 
