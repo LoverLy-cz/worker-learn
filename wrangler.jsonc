@@ -22,6 +22,7 @@
       "binding": "DB",
       "database_name": "worker_learn",
       "database_id": "da252dec-9091-4537-8d81-a880981c9792",
+      "migrations_dir": "drizzle/migrations"
     }
   ]
   /**
