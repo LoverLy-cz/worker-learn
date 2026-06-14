@@ -1,33 +1,31 @@
 <script setup lang="ts">
   import request from "@/api/request.ts";
-  import { reactive, ref, onMounted, onBeforeMount } from "vue";
-
-  interface CreateNoteInput {
-    title: string;
-    content: string;
-  }
+  import { reactive, ref, onMounted, onBeforeMount, computed } from "vue";
 
   interface Note {
-    id: number;
+    id?: number;
     title: string;
     content: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
   }
 
-  const createNoteInput = reactive<CreateNoteInput>({
+  const noteInput = reactive<Note>({
     title: "",
     content: "",
   });
 
+
   const notes = ref<Note[]>([]);
 
-  const handleAdd = async () => {
-    const result = await request.post("/notes", createNoteInput)
+  const isEditing = ref(false);
+
+  const doAdd = async () => {
+    const result = await request.post("/notes", noteInput)
 
     const data: Note = result.data;
-    createNoteInput.title = "";
-    createNoteInput.content = "";
+    noteInput.title = "";
+    noteInput.content = "";
 
     notes.value.push(data);
   }
@@ -42,19 +40,59 @@
     notes.value = result.data;
   }
 
+  const handleEdit = (event: Event, note: Note) => {
+    isEditing.value = true;
+
+    noteInput.id = note.id;
+    noteInput.title = note.title;
+    noteInput.content = note.content;
+  }
+
   onBeforeMount(() => {
     getNoteList();
   })
 
+  let operationText = computed(() => {
+    return isEditing.value ? "编辑" : '新增';
+  });
+
+  const doEdit = async () => {
+    const result = await request.patch(`/notes/${ noteInput.id }`, {
+      title: noteInput.title,
+      content: noteInput.content
+    });
+
+    let find = notes.value.find(item => item.id === noteInput.id);
+    if (find) {
+      find.title = noteInput.title;
+      find.content = noteInput.content;
+    }
+
+
+    noteInput.id = undefined;
+    noteInput.title = ""
+    noteInput.content = "";
+
+    isEditing.value = false;
+  }
+
+
+  const handleOperation = () => {
+    if (isEditing.value) {
+      doEdit();
+    } else {
+      doAdd();
+    }
+  }
 </script>
 
 <template>
   <div>
     <div>
-      <h2>添加数据</h2>
-      <label>标题<input placeholder="请输入标题" v-model.trim="createNoteInput.title" type="text"></label>
-      <label>内容<input placeholder="请输入内容" v-model.trim="createNoteInput.content" type="text"></label>
-      <button @click="handleAdd">添加</button>
+      <h2>{{ operationText }}数据</h2>
+      <label>标题<input placeholder="请输入标题" v-model.trim="noteInput.title" type="text"></label>
+      <label>内容<input placeholder="请输入内容" v-model.trim="noteInput.content" type="text"></label>
+      <button @click="handleOperation">{{ operationText }}</button>
     </div>
 
     <div>
@@ -64,6 +102,7 @@
           <h3>{{ note.title }}</h3>
           <p>{{ note.content }}</p>
           <button @click="handleDelete($event, note)">删除</button>
+          <button @click="handleEdit($event, note)">编辑</button>
         </li>
       </ul>
       <p v-else>暂无数据</p>
