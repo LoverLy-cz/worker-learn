@@ -6,7 +6,7 @@ This is a Vue 3 + Vite project with a Cloudflare Workers backend. The current le
 
 ## Current Task
 
-Lock in the backend style direction: keep controllers function-based in the current Hono/Workers project, and use that as the baseline for the next module design.
+Add Chinese comments to key TypeScript types and configuration files so the current Hono/Workers + Drizzle structure is easier to read and maintain.
 
 ## User Requirements
 
@@ -82,6 +82,9 @@ Lock in the backend style direction: keep controllers function-based in the curr
 - Refactored the shared `ApiResponse` helper into a static class while keeping the HTTP-style response body shape.
 - Verified the project still builds successfully after the `ApiResponse` class refactor.
 - Reviewed the current `note.controller.ts` shape to compare function-based controllers with static-class controllers.
+- Added Chinese comments to key config files and shared TypeScript types.
+- Fixed `drizzle.config.ts` to point at the modular schema path instead of the removed legacy file.
+- Verified the project still builds successfully after the comment/config cleanup.
 - Verified the project still builds successfully after the Axios enhancements.
 - Inspected `@cloudflare/vite-plugin` source to locate `run_worker_first` behavior.
 - Inspected the current Vite and Worker configuration to explain why page refreshes still reach the Worker.
@@ -105,7 +108,7 @@ Lock in the backend style direction: keep controllers function-based in the curr
 
 ## In Progress
 
-- Verifying the static `ApiResponse` refactor still compiles cleanly.
+- Waiting for the next architectural cleanup or module expansion task.
 
 ## Pending / TODO
 
@@ -118,6 +121,28 @@ Lock in the backend style direction: keep controllers function-based in the curr
 
 - `progress.md`
   - Rewritten to reflect the new Drizzle refactor task and current next steps.
+- `wrangler.jsonc`
+  - Added Chinese comments for key Worker and D1 configuration fields and fixed the array separator.
+- `drizzle.config.ts`
+  - Added Chinese comments and updated the schema scan path to the current modular structure.
+- `vite.config.ts`
+  - Added Chinese comments for Vite, Vue, and Cloudflare plugin setup.
+- `env.d.ts`
+  - Added a short Chinese comment explaining the Vite env type reference.
+- `server/common/response/api-response.ts`
+  - Added Chinese comments for unified response types and the static helper class.
+- `server/common/errors/app-error.ts`
+  - Added Chinese comments for business errors, factories, and the type guard.
+- `server/modules/note/note.types.ts`
+  - Added Chinese comments explaining inferred entity types and create/update input types.
+- `server/modules/note/note.schema.ts`
+  - Added Chinese comments for the notes table fields and timestamp defaults.
+- `server/shared/db/client.ts`
+  - Added a Chinese comment explaining the Drizzle wrapper for D1.
+- `server/index.ts`
+  - Added a Chinese comment explaining the global `/api` base path.
+- `src/api/request.ts`
+  - Added Chinese comments for Axios baseURL, credentials, and interceptor extension points.
 - `server/common/response/api-response.ts`
   - Converted the exported response helper from a plain object into a static class.
 - `src/assets/base.css`
@@ -398,3 +423,9 @@ Lock in the backend style direction: keep controllers function-based in the curr
 
 - User chose to keep the project on the function-based controller path.
 - The next architectural guidance will treat function controllers as the default style for future modules.
+
+### 2026-06-15 21:08
+
+- Added Chinese comments to key config files, shared response/error helpers, and note module types.
+- Fixed `drizzle.config.ts` to use the current modular schema path and re-ran `cmd /c npm run build`.
+- Build and type-check passed; only the existing Wrangler log-file permission warning remained.

@@ -4,27 +4,35 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  // Worker 在 Cloudflare 平台上的项目名。
   "name": "worker-learn",
+  // 兼容日期决定 Workers 运行时启用的默认行为版本。
   "compatibility_date": "2026-06-07",
+  // 生产环境入口，这里直接指向后端 Worker 代码。
   "main": "server/index.ts",
   "assets": {
+    // SPA 模式下，前端路由找不到静态文件时回退到 index.html。
     "not_found_handling": "single-page-application"
   },
   "observability": {
     "enabled": true
   },
+  // 上传 source map 后，线上报错更容易映射回源码。
   "upload_source_maps": true,
   "compatibility_flags": [
+    // 允许在 Workers 里使用一部分 Node.js 兼容能力。
     "nodejs_compat"
   ],
   "d1_databases": [
     {
+      // 代码里通过 c.env.DB 访问这个 D1 绑定。
       "binding": "DB",
       "database_name": "worker_learn",
       "database_id": "7dcd078e-321f-4d22-8e3f-15bdd31d75bc",
+      // Drizzle 生成的迁移文件统一放在这里。
       "migrations_dir": "drizzle/migrations"
     }
-  ]
+  ],
   /**
  * Smart Placement
  * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
