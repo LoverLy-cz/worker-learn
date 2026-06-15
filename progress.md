@@ -6,7 +6,7 @@ This is a Vue 3 + Vite project with a Cloudflare Workers backend. The current le
 
 ## Current Task
 
-Guide the user through the Drizzle refactor step by step, with explicit file-by-file instructions instead of making more code changes on their behalf, using a simplified notes model without `email`, adding the delete route, applying the existing Drizzle migration to local D1, and optimizing the PATCH route.
+Lock in the backend style direction: keep controllers function-based in the current Hono/Workers project, and use that as the baseline for the next module design.
 
 ## User Requirements
 
@@ -34,6 +34,8 @@ Guide the user through the Drizzle refactor step by step, with explicit file-by-
 - Recommend a practical library choice for the current project
 - Refactor the notes database layer to Drizzle
 - Set up Drizzle migration generation and application for the `notes` table
+- Refactor the backend into SpringBoot-like business layers
+- Standardize API response and route conventions into a more production-like style
 
 ## Decisions
 
@@ -57,6 +59,9 @@ Guide the user through the Drizzle refactor step by step, with explicit file-by-
 - After CRUD works locally, move to login/auth before uploads.
 - Prefer Drizzle for a Mongoose-like query experience on Workers/D1.
 - Drizzle is the leading recommendation because it supports D1 and provides `findMany`/`findFirst` style relational queries.
+- For the project-style refactor, standardize API responses instead of returning raw data directly.
+- Use a unified response body with `code` following HTTP-style semantics such as `200/400/404/500`.
+- In the current Hono/Workers stack, controllers should stay function-based rather than being converted to static classes.
 
 ## Completed
 
@@ -74,6 +79,9 @@ Guide the user through the Drizzle refactor step by step, with explicit file-by-
 - Created `src/api/request.ts` with a default-exported Axios instance.
 - Verified the project still builds successfully with `cmd /c npm run build`.
 - Updated `src/api/request.ts` with request/response interceptors and a generic `requestData` helper.
+- Refactored the shared `ApiResponse` helper into a static class while keeping the HTTP-style response body shape.
+- Verified the project still builds successfully after the `ApiResponse` class refactor.
+- Reviewed the current `note.controller.ts` shape to compare function-based controllers with static-class controllers.
 - Verified the project still builds successfully after the Axios enhancements.
 - Inspected `@cloudflare/vite-plugin` source to locate `run_worker_first` behavior.
 - Inspected the current Vite and Worker configuration to explain why page refreshes still reach the Worker.
@@ -97,23 +105,21 @@ Guide the user through the Drizzle refactor step by step, with explicit file-by-
 
 ## In Progress
 
-- Refocusing the Drizzle refactor into user-driven step-by-step instructions.
+- Verifying the static `ApiResponse` refactor still compiles cleanly.
 
 ## Pending / TODO
 
-- Create a Drizzle schema file for the `notes` table.
-- Rewrite `server/db.ts` to use Drizzle instead of raw SQL.
-- Clean up `server/routes/noteRoute.ts` so it clearly uses the Drizzle-backed helpers.
-- Fix the Wrangler config formatting issue that is interfering with build verification.
-- Add a DELETE route for notes to expose the new `deleteNote()` helper.
-- Apply the already-generated Drizzle migration to the local D1 database.
-- Optimize the PATCH route implementation for notes.
+- Design a layered backend structure for Workers that separates controller, service, repository, and schema concerns if the project expands beyond `note`.
+- Decide how far to decompose now: `note` only, or `note + user + auth`.
+- Refine auth/session concerns when the project is ready for the next module.
 - Optional follow-up: address the missing `src/components/TheWelcome.vue` import in `HomeView.vue` if the app should compile cleanly without warnings or errors outside the DB task.
 
 ## Files Changed
 
 - `progress.md`
   - Rewritten to reflect the new Drizzle refactor task and current next steps.
+- `server/common/response/api-response.ts`
+  - Converted the exported response helper from a plain object into a static class.
 - `src/assets/base.css`
   - Added the global visual foundation and component defaults.
 - `src/assets/main.css`
@@ -140,12 +146,14 @@ Guide the user through the Drizzle refactor step by step, with explicit file-by-
 - The project already contains a generated `drizzle/migrations/0000_striped_randall_flagg.sql` that matches the current notes schema, so the next step is applying it rather than generating a new one.
 - The PATCH route was optimized to validate ids, trim input, require at least one changed field, and return consistent JSON responses.
 - The user wrote a PATCH route and wants it reviewed and improved directly.
+- The `note` module has been refactored into `controller / service / repository / schema / types`, with unified `code/message/data` responses.
+- Wrangler still prints a log-file `EPERM` warning when writing to `C:\Users\admin\AppData\Roaming\xdg.config\.wrangler\logs\...`, but the build itself succeeds.
 
 ## Next Steps
 
-1. Optimize the PATCH route implementation and keep the response shape consistent.
-2. Verify the notes CRUD routes still work after the route cleanup.
-3. Later, if the schema changes, regenerate a new migration with `drizzle-kit`.
+1. Reuse the same layered pattern for a `user` module when you are ready.
+2. Add `auth` on top of `user` using the same controller/service split.
+3. Optionally clean up the older demo-era files and folders if you want the tree even tighter.
 
 ## Log
 
@@ -345,3 +353,48 @@ Guide the user through the Drizzle refactor step by step, with explicit file-by-
 
 - The user confirmed the CRUD and migration steps are already passing.
 - Focus shifted to reviewing and optimizing the handwritten PATCH route.
+
+### 2026-06-14 00:15
+
+- User said the current project still feels like a demo.
+- The new goal is to move toward a SpringBoot-like layered backend structure, especially `controller` and `service` separation.
+
+### 2026-06-14 00:20
+
+- User chose the scope of refactoring only the `note` module first.
+- User also confirmed that both internal structure and external API style can be standardized together.
+
+### 2026-06-14 00:25
+
+- User chose the unified response-wrapper API style.
+- User later changed the response convention to use HTTP-style codes such as `200/400/404/500`.
+
+### 2026-06-14 00:30
+
+- User decided the unified response body should not include a separate `success` field.
+- The response shape is now converging on `code/message/data`.
+
+### 2026-06-15 00:00
+
+- Completed the `note` module backend refactor into layered files.
+- Verified the project still builds successfully after the restructuring and response standardization.
+
+### 2026-06-15 20:06
+
+- Converted `ApiResponse` into a static class and renamed the payload type to avoid name collisions.
+- Updated `progress.md` to reflect the response-helper refactor and pending build verification.
+
+### 2026-06-15 20:07
+
+- Ran `cmd /c npm run build` after the refactor.
+- Type-check and both worker/client bundles passed; only the recurring Wrangler log-file permission warning remained.
+
+### 2026-06-15 20:10
+
+- Reviewed the current function-based controller style in `server/modules/note/note.controller.ts`.
+- Preparing guidance on when function controllers are preferable and when class/static-class controllers make sense.
+
+### 2026-06-15 20:12
+
+- User chose to keep the project on the function-based controller path.
+- The next architectural guidance will treat function controllers as the default style for future modules.

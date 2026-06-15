@@ -23,7 +23,7 @@
   const doAdd = async () => {
     const result = await request.post("/notes", noteInput)
 
-    const data: Note = result.data;
+    const data: Note = result.data.data;
     noteInput.title = "";
     noteInput.content = "";
 
@@ -37,7 +37,7 @@
 
   const getNoteList = async () => {
     let result = await request.get("/notes");
-    notes.value = result.data;
+    notes.value = result.data.data;
   }
 
   const handleEdit = (event: Event, note: Note) => {

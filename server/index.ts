@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import noteRoute from "./routes/noteRoute";
+import noteRoute from "./modules/note/note.route";
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<{ Bindings: Env }>().basePath("/api");
 
-app.route('/api/notes', noteRoute);
+app.route("/", noteRoute);
 
 export default app;
