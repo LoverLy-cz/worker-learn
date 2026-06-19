@@ -9,16 +9,9 @@ import {
   removeNote,
 } from "./note.service";
 import type { CreateNoteInput, UpdateNoteInput } from "./note.types";
+import { readJsonBody } from "../../common";
 
 type NoteContext = Context<{ Bindings: Env }>;
-
-async function readJsonBody<T>(c: NoteContext): Promise<T | null> {
-  try {
-    return await c.req.json<T>();
-  } catch {
-    return null;
-  }
-}
 
 function handleError(c: NoteContext, error: unknown) {
   if (isAppError(error)) {

@@ -2,6 +2,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { createD1Db } from "../../shared/db/client";
 import { notes } from "./note.schema";
 import type { CreateNoteInput, Note, UpdateNoteInput } from "./note.types";
+import { drizzle } from "drizzle-orm/d1";
 
 function createNotesDb(db: D1Database) {
   return createD1Db(db, { notes });

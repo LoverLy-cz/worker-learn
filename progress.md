@@ -6,7 +6,7 @@ This is a Vue 3 + Vite project with a Cloudflare Workers backend. The current le
 
 ## Current Task
 
-Add Chinese comments to key TypeScript types and configuration files so the current Hono/Workers + Drizzle structure is easier to read and maintain.
+Restructure the frontend so `App.vue` only renders routes, while `Home` becomes the admin dashboard shell with a sidebar that switches between Note and Material modules.
 
 ## User Requirements
 
@@ -85,6 +85,11 @@ Add Chinese comments to key TypeScript types and configuration files so the curr
 - Added Chinese comments to key config files and shared TypeScript types.
 - Fixed `drizzle.config.ts` to point at the modular schema path instead of the removed legacy file.
 - Verified the project still builds successfully after the comment/config cleanup.
+- Completed the `material` backend module with full CRUD endpoints and layered repository/service/controller files.
+- Added a frontend `material` route, page, and API wrapper so the UI can list, create, update, and delete materials.
+- Cleaned up the `notes` homepage UI so it matches the new app shell and remains readable.
+- Reworked the frontend into an admin-style layout: `App.vue` is now route-only, `Home` is the shell, and `Note`/`Material` are child modules.
+- Verified the project still builds successfully after the `material` feature work.
 - Verified the project still builds successfully after the Axios enhancements.
 - Inspected `@cloudflare/vite-plugin` source to locate `run_worker_first` behavior.
 - Inspected the current Vite and Worker configuration to explain why page refreshes still reach the Worker.
@@ -108,7 +113,7 @@ Add Chinese comments to key TypeScript types and configuration files so the curr
 
 ## In Progress
 
-- Waiting for the next architectural cleanup or module expansion task.
+- Pagination is still deferred; the current frontend structure is now ready for additional modules and UI refinement.
 
 ## Pending / TODO
 
@@ -151,6 +156,34 @@ Add Chinese comments to key TypeScript types and configuration files so the curr
   - Added app shell and utility layout styles.
 - `src/api/request.ts`
   - Added a reusable Axios instance with `baseURL`, timeout, and JSON headers, plus interceptors and a typed data helper.
+- `server/modules/material/material.schema.ts`
+  - Corrected the Drizzle schema for the `materials` table.
+- `server/modules/material/material.repository.ts`
+  - Added database access helpers for material CRUD operations.
+- `server/modules/material/material.service.ts`
+  - Added input normalization and business rules for material CRUD.
+- `server/modules/material/material.controller.ts`
+  - Added full controller handlers for list, detail, create, update, and delete.
+- `server/modules/material/material.route.ts`
+  - Added the `/:id` route and wired the full material API surface.
+- `src/api/material.ts`
+  - Added a frontend API wrapper for material CRUD calls.
+- `src/pages/material/Material.vue`
+  - Added the material management page UI and API interactions.
+- `src/pages/home/Home.vue`
+  - Rebuilt it into the admin shell with sidebar navigation and child-route content area.
+- `src/pages/note/Note.vue`
+  - Extracted the note management UI into its own module page.
+- `src/router/index.ts`
+  - Reworked routes into a `Home` layout with `note` and `material` child pages.
+- `src/App.vue`
+  - Simplified it so it only renders the router outlet.
+- `src/assets/base.css`
+  - Rebuilt the base visual foundation for the new shell.
+- `src/assets/main.css`
+  - Replaced the top-nav shell styles with an admin dashboard layout and shared module-page styles.
+- `server/index.ts`
+  - Rebuilt the backend entry file with the material route mounted cleanly.
 
 ## Issues / Risks
 
@@ -429,3 +462,24 @@ Add Chinese comments to key TypeScript types and configuration files so the curr
 - Added Chinese comments to key config files, shared response/error helpers, and note module types.
 - Fixed `drizzle.config.ts` to use the current modular schema path and re-ran `cmd /c npm run build`.
 - Build and type-check passed; only the existing Wrangler log-file permission warning remained.
+
+### 2026-06-19 15:07
+
+- Finished the `material` module backend and frontend integration.
+- Ran `cmd /c npm run build` successfully; the only remaining warning is Wrangler's recurring log-file `EPERM` issue.
+
+### 2026-06-19 15:09
+
+- Rebuilt the notes homepage UI to remove mojibake text and match the shared app shell.
+- Re-ran `cmd /c npm run build`; type-check and both bundles passed again with the same Wrangler log warning.
+
+### 2026-06-19 15:15
+
+- User said pagination should be skipped for now.
+- Shifted the next material UI refinement toward search, preview, and delete confirmation instead.
+
+### 2026-06-19 15:38
+
+- Moved the shell layout from `App.vue` into `Home.vue` and turned it into a sidebar-style admin dashboard.
+- Extracted the note page into `src/pages/note/Note.vue` and made `note` / `material` child routes under `Home`.
+- Re-ran `cmd /c npm run build`; type-check and both bundles passed again with the same Wrangler log-file warning.
