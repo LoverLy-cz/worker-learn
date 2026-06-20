@@ -12,7 +12,7 @@ const materialRoute = new Hono<{ Bindings: Env }>().basePath("/materials");
 materialRoute.get("/", getMaterialsController);
 materialRoute.get("/:id", getMaterialController);
 materialRoute.post("/", addMaterialController);
-materialRoute.patch("/:id", updateMaterialController);
+materialRoute.put("/:id", updateMaterialController);
 materialRoute.delete("/:id", deleteMaterialController);
 
 export default materialRoute;

@@ -44,7 +44,7 @@ export function createMaterial(input: MaterialInput) {
 export function updateMaterial(id: number, input: Partial<MaterialInput>) {
   return requestData<Material>({
     url: `/materials/${id}`,
-    method: "PATCH",
+    method: "PUT",
     data: input,
   });
 }
