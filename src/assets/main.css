@@ -381,6 +381,17 @@ a {
   line-height: 1.7;
 }
 
+.content-card__link {
+  display: inline-flex;
+  margin-top: 12px;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.content-card__link:hover {
+  text-decoration: underline;
+}
+
 .content-card__meta {
   display: flex;
   justify-content: space-between;

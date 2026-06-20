@@ -6,7 +6,7 @@ This is a Vue 3 + Vite project with a Cloudflare Workers backend. The current le
 
 ## Current Task
 
-Restructure the frontend so `App.vue` only renders routes, while `Home` becomes the admin dashboard shell with a sidebar that switches between Note and Material modules.
+Add a required `link` field to the material module for download URLs and wire it through schema, validation, API, and UI.
 
 ## User Requirements
 
@@ -89,6 +89,11 @@ Restructure the frontend so `App.vue` only renders routes, while `Home` becomes 
 - Added a frontend `material` route, page, and API wrapper so the UI can list, create, update, and delete materials.
 - Cleaned up the `notes` homepage UI so it matches the new app shell and remains readable.
 - Reworked the frontend into an admin-style layout: `App.vue` is now route-only, `Home` is the shell, and `Note`/`Material` are child modules.
+- Added an `order` field to materials across schema, types, API, and UI.
+- Updated material list queries to sort by `order` first.
+- Added a new migration file for the material `order` column.
+- Added a required `link` field to materials across schema, types, API, validation, and UI.
+- Added a new migration file for the material `link` column.
 - Verified the project still builds successfully after the `material` feature work.
 - Verified the project still builds successfully after the Axios enhancements.
 - Inspected `@cloudflare/vite-plugin` source to locate `run_worker_first` behavior.
@@ -113,7 +118,7 @@ Restructure the frontend so `App.vue` only renders routes, while `Home` becomes 
 
 ## In Progress
 
-- Pagination is still deferred; the current frontend structure is now ready for additional modules and UI refinement.
+- Waiting for the latest material migrations to be applied locally if the existing D1 database should pick up `order` and `link`.
 
 ## Pending / TODO
 
@@ -157,19 +162,25 @@ Restructure the frontend so `App.vue` only renders routes, while `Home` becomes 
 - `src/api/request.ts`
   - Added a reusable Axios instance with `baseURL`, timeout, and JSON headers, plus interceptors and a typed data helper.
 - `server/modules/material/material.schema.ts`
-  - Corrected the Drizzle schema for the `materials` table.
+  - Corrected the Drizzle schema for the `materials` table and added the `order` and `link` fields.
 - `server/modules/material/material.repository.ts`
-  - Added database access helpers for material CRUD operations.
+  - Added database access helpers for material CRUD operations, changed list sorting to use `order`, and wired the `link` field into writes.
 - `server/modules/material/material.service.ts`
-  - Added input normalization and business rules for material CRUD.
+  - Added input normalization and business rules for material CRUD, including the `order` field and required `link`.
 - `server/modules/material/material.controller.ts`
   - Added full controller handlers for list, detail, create, update, and delete.
 - `server/modules/material/material.route.ts`
   - Added the `/:id` route and wired the full material API surface.
 - `src/api/material.ts`
-  - Added a frontend API wrapper for material CRUD calls.
+  - Added a frontend API wrapper for material CRUD calls and the `order` / `link` field types.
 - `src/pages/material/Material.vue`
-  - Added the material management page UI and API interactions.
+  - Added the material management page UI and API interactions, including `order` editing plus required `link` editing and display.
+- `drizzle/migrations/0002_add_material_order.sql`
+  - Added the database migration for the new material `order` column.
+- `drizzle/migrations/0003_add_material_link.sql`
+  - Added the database migration for the new required material `link` column.
+- `src/assets/main.css`
+  - Added a visual style for the material download link entry on cards.
 - `src/pages/home/Home.vue`
   - Rebuilt it into the admin shell with sidebar navigation and child-route content area.
 - `src/pages/note/Note.vue`
@@ -482,4 +493,16 @@ Restructure the frontend so `App.vue` only renders routes, while `Home` becomes 
 
 - Moved the shell layout from `App.vue` into `Home.vue` and turned it into a sidebar-style admin dashboard.
 - Extracted the note page into `src/pages/note/Note.vue` and made `note` / `material` child routes under `Home`.
+- Re-ran `cmd /c npm run build`; type-check and both bundles passed again with the same Wrangler log-file warning.
+
+### 2026-06-20 13:03
+
+- Added the `order` field to the material schema, types, repository, service, and UI form.
+- Changed material list sorting to `order` ascending, then `id` descending.
+- Added `drizzle/migrations/0002_add_material_order.sql` and re-ran `cmd /c npm run build`.
+
+### 2026-06-20 14:07
+
+- Added a required `link` field to the material schema, API types, service validation, repository writes, and frontend form.
+- Added `drizzle/migrations/0003_add_material_link.sql` for the new download-link column.
 - Re-ran `cmd /c npm run build`; type-check and both bundles passed again with the same Wrangler log-file warning.

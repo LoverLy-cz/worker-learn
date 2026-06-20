@@ -19,14 +19,16 @@ function normalizeId(id: number) {
 function normalizeCreateInput(input: CreateMaterialInput): CreateMaterialInput {
   const title = input.title.trim();
   const cover = input.cover.trim();
+  const link = input.link.trim();
 
-  if (!title || !cover) {
-    throw badRequest("title and cover are required");
+  if (!title || !cover || !link) {
+    throw badRequest("title, cover and link are required");
   }
 
   const payload: CreateMaterialInput = {
     title,
     cover,
+    link,
   };
 
   if (input.desc !== undefined) {
@@ -34,6 +36,13 @@ function normalizeCreateInput(input: CreateMaterialInput): CreateMaterialInput {
     if (desc) {
       payload.desc = desc;
     }
+  }
+
+  if (input.order !== undefined) {
+    if (!Number.isInteger(input.order) || input.order < 0) {
+      throw badRequest("order must be a non-negative integer");
+    }
+    payload.order = input.order;
   }
 
   if (input.downloads !== undefined) {
@@ -65,9 +74,24 @@ function normalizeUpdateInput(input: UpdateMaterialInput): UpdateMaterialInput {
     payload.cover = cover;
   }
 
+  if (input.link !== undefined) {
+    const link = input.link.trim();
+    if (!link) {
+      throw badRequest("link cannot be empty");
+    }
+    payload.link = link;
+  }
+
   if (input.desc !== undefined) {
     const desc = input.desc?.trim();
     payload.desc = desc || null;
+  }
+
+  if (input.order !== undefined) {
+    if (!Number.isInteger(input.order) || input.order < 0) {
+      throw badRequest("order must be a non-negative integer");
+    }
+    payload.order = input.order;
   }
 
   if (input.downloads !== undefined) {

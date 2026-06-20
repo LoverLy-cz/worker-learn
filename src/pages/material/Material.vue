@@ -18,7 +18,9 @@ const formMessage = ref("");
 const form = reactive<MaterialInput>({
   title: "",
   cover: "",
+  link: "",
   desc: "",
+  order: 0,
   downloads: 0,
 });
 
@@ -31,7 +33,9 @@ function resetForm() {
   editingId.value = null;
   form.title = "";
   form.cover = "";
+  form.link = "";
   form.desc = "";
+  form.order = 0;
   form.downloads = 0;
 }
 
@@ -48,14 +52,16 @@ function startEdit(item: Material) {
   editingId.value = item.id;
   form.title = item.title;
   form.cover = item.cover;
+  form.link = item.link;
   form.desc = item.desc ?? "";
+  form.order = item.order ?? 0;
   form.downloads = item.downloads ?? 0;
   formMessage.value = `正在编辑 ${item.title}`;
 }
 
 async function submitForm() {
-  if (!form.title.trim() || !form.cover.trim()) {
-    formMessage.value = "标题和封面地址不能为空";
+  if (!form.title.trim() || !form.cover.trim() || !form.link.trim()) {
+    formMessage.value = "标题、封面地址和下载链接不能为空";
     return;
   }
 
@@ -65,7 +71,9 @@ async function submitForm() {
       const created = await createMaterial({
         title: form.title,
         cover: form.cover,
+        link: form.link,
         desc: form.desc || undefined,
+        order: form.order ?? 0,
         downloads: form.downloads ?? 0,
       });
       materials.value = [created, ...materials.value];
@@ -74,7 +82,9 @@ async function submitForm() {
       const updated = await updateMaterial(editingId.value, {
         title: form.title,
         cover: form.cover,
+        link: form.link,
         desc: form.desc || undefined,
+        order: form.order ?? 0,
         downloads: form.downloads ?? 0,
       });
       materials.value = materials.value.map((item) =>
@@ -149,12 +159,22 @@ onMounted(() => {
           </label>
 
           <label class="field field-full">
+            <span>下载链接</span>
+            <input v-model.trim="form.link" type="text" placeholder="输入下载链接 URL" />
+          </label>
+
+          <label class="field field-full">
             <span>描述</span>
             <textarea
               v-model.trim="form.desc"
               rows="4"
               placeholder="写一点素材说明"
             />
+          </label>
+
+          <label class="field">
+            <span>排序值</span>
+            <input v-model.number="form.order" type="number" min="0" step="1" />
           </label>
 
           <label class="field">
@@ -192,9 +212,13 @@ onMounted(() => {
               <div>
                 <h4 class="content-card__title">{{ item.title }}</h4>
                 <p class="content-card__desc">{{ item.desc || "暂无描述" }}</p>
+                <a class="content-card__link" :href="item.link" target="_blank" rel="noreferrer">
+                  下载链接
+                </a>
               </div>
 
               <div class="content-card__meta">
+                <span>排序 {{ item.order ?? 0 }}</span>
                 <span>下载 {{ item.downloads ?? 0 }}</span>
                 <span>#{{ item.id }}</span>
               </div>

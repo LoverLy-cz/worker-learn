@@ -22,6 +22,20 @@
       "when": 1781882409726,
       "tag": "0002_striped_loners",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1781932342533,
+      "tag": "0003_curvy_captain_flint",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1781935724973,
+      "tag": "0004_orange_the_leader",
+      "breakpoints": true
     }
   ]
 }

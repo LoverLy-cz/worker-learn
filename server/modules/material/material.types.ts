@@ -7,7 +7,9 @@ export type Material = typeof materials.$inferSelect;
 export type CreateMaterialInput = {
   title: string;
   cover: string;
+  link: string;
   desc?: string | null;
+  order?: number;
   downloads?: number;
 };
 

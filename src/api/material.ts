@@ -4,14 +4,18 @@ export interface Material {
   id: number;
   title: string;
   cover: string;
+  link: string;
   desc: string | null;
+  order: number;
   downloads: number;
 }
 
 export interface MaterialInput {
   title: string;
   cover: string;
+  link: string;
   desc?: string | null;
+  order?: number;
   downloads?: number;
 }
 

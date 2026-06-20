@@ -11,7 +11,7 @@ function createMaterialsDb(db: D1Database) {
 export async function findMaterials(db: D1Database): Promise<Material[]> {
   const database = createMaterialsDb(db);
   return database.query.materials.findMany({
-    orderBy: (table, { desc }) => [desc(table.id)],
+    orderBy: (table, { asc }) => [asc(table.order)],
   });
 }
 
@@ -37,7 +37,9 @@ export async function insertMaterial(
     .values({
       title: input.title,
       cover: input.cover,
+      link: input.link,
       desc: input.desc ?? null,
+      order: input.order ?? 0,
       downloads: input.downloads ?? 0,
     })
     .run();
